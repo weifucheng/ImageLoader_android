@@ -2,17 +2,20 @@ package nuc.edu.cn.imageloader.cache;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Environment;
-import android.util.Log;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import nuc.edu.cn.imageloader.disklrucache.DiskLruCache;
+import nuc.edu.cn.imageloader.request.ImageRequest;
+import nuc.edu.cn.imageloader.resizer.ImageResizer;
 import nuc.edu.cn.imageloader.utils.CloseUtils;
+import nuc.edu.cn.imageloader.utils.MD5Helper;
 
 /**
  * Created by weifucheng on 2016/3/20.
@@ -23,6 +26,7 @@ public class DiskCache implements ImageCache {
     private DiskLruCache mDiskLruCache;
     private static final int MB=1024*1024;
     public boolean isInit=false;
+    private ImageResizer mImageResiz=new ImageResizer();
     private static final String IMAGE_DISK_CACHE = "bitmap";
 
     @Override
@@ -52,22 +56,52 @@ public class DiskCache implements ImageCache {
 
     @Override
     public void put(String url, Bitmap bmp) {
-        FileOutputStream fileOutputStream=null;
+        DiskLruCache.Editor editor=null;
         try {
-            fileOutputStream=new FileOutputStream(cacheDir+"/"+url);
-            bmp.compress(Bitmap.CompressFormat.PNG,100,fileOutputStream);
-            Log.d(TAG,url+"pic diskcache success");
-        } catch (FileNotFoundException e) {
+            editor=mDiskLruCache.edit(MD5Helper.StringtoMD5(url));
+            OutputStream outputStream=editor.newOutputStream(0);
+            if(writeBitmapToDisk(bmp,outputStream)){
+                editor.commit();
+            }else {
+                editor.abort();
+            }
+            CloseUtils.closeQuietly(outputStream);
+        } catch (IOException e) {
             e.printStackTrace();
-        }  finally {
-            CloseUtils.closeQuietly(fileOutputStream);
         }
     }
+    private Boolean writeBitmapToDisk(Bitmap bitmap,OutputStream outputStream){
+        BufferedOutputStream bos=new BufferedOutputStream(outputStream,8*1024);
+        bitmap.compress(Bitmap.CompressFormat.JPEG,100,bos);
+        boolean result=true;
+        try {
+            bos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+            result=false;
+        }
+            return result;
+    }
+
 
     @Override
-    public Bitmap get(String url) {
-        Log.d(TAG, cacheDir+url+"come from Disk");
-        return BitmapFactory.decodeFile(cacheDir+"/"+url);
+    public synchronized Bitmap get(ImageRequest imageRequest) {
+        Bitmap bitmap=null;
+        try {
+            DiskLruCache.Snapshot snapshot=mDiskLruCache.get(MD5Helper.StringtoMD5(imageRequest.mUrl));
+            if(snapshot!=null){
+                FileInputStream fileInputStream= (FileInputStream) snapshot.getInputStream(0);
+                FileDescriptor fileDescriptor=fileInputStream.getFD();
+                bitmap=mImageResiz.deodeSampledBitmapFromFileDescriptor(fileDescriptor,
+                        imageRequest.mImageView.getWidth(),imageRequest.mImageView.getHeight());
+                if(bitmap!=null){
+                    CacheManager.getCache(MemoryCache.class).put(imageRequest.mUrl,bitmap);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bitmap;
     }
 
 }

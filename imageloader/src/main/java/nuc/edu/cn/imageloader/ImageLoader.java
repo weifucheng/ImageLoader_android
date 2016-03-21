@@ -13,6 +13,7 @@ import java.util.concurrent.Executors;
 
 import nuc.edu.cn.imageloader.cache.ImageCache;
 import nuc.edu.cn.imageloader.config.ImageLoaderConfig;
+import nuc.edu.cn.imageloader.request.ImageRequest;
 
 /**
  * Created by weifucheng on 2016/3/19.
@@ -22,7 +23,8 @@ public class ImageLoader {
     private ImageLoaderConfig mConfig;
     ExecutorService mExecutorService= Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     public void displayImage(final String url,final ImageView imageView){
-        Bitmap bitmap=mConfig.imageCache.get(url);
+        ImageRequest imageRequest=new ImageRequest(imageView,url);
+        Bitmap bitmap=mConfig.imageCache.get(imageRequest);
         if(bitmap!=null){
             imageView.setImageBitmap(bitmap);
             return;

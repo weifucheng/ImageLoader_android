@@ -3,6 +3,8 @@ package nuc.edu.cn.imageloader.cache;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import nuc.edu.cn.imageloader.request.ImageRequest;
+
 /**
  * Created by weifucheng on 2016/3/20.
  */
@@ -35,10 +37,10 @@ public class DoubleCache implements ImageCache {
     }
 
     @Override
-    public Bitmap get(String url) {
-        Bitmap bitmap=mMemoryCache.get(url);
+    public Bitmap get(ImageRequest imageRequest) {
+        Bitmap bitmap=mMemoryCache.get(imageRequest);
         if(bitmap==null){
-            bitmap=mDiskCache.get(url);
+            bitmap=mDiskCache.get(imageRequest);
         }
         return bitmap;
     }
