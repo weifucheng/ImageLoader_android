@@ -9,16 +9,23 @@ import android.graphics.Bitmap;
 public class DoubleCache implements ImageCache {
     MemoryCache mMemoryCache=null;
     DiskCache mDiskCache=null;
-
+    public boolean isInit=false;
     @Override
-    public void setContext(Context context){
-        mDiskCache.setContext(context);
+    public void init(Context context) {
+        mMemoryCache= (MemoryCache) CacheManager.getCache(MemoryCache.class);
+        mDiskCache= (DiskCache) CacheManager.getCache(DiskCache.class);
+        if(!mMemoryCache.isInit()){
+            mMemoryCache.init(context);
+        }
+        if(!mDiskCache.isInit()){
+            mDiskCache.init(context);
+        }
+        isInit=true;
     }
 
     @Override
-    public void init() {
-        mMemoryCache= (MemoryCache) CacheManager.getCache(MemoryCache.class);
-        mDiskCache= (DiskCache) CacheManager.getCache(DiskCache.class);
+    public boolean isInit() {
+        return isInit;
     }
 
     @Override

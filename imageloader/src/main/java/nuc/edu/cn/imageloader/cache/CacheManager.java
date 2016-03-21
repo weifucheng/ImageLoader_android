@@ -10,14 +10,16 @@ import java.util.Map;
  */
 public class CacheManager {
     private static volatile Map<Class<? extends ImageCache>,ImageCache> CacheMap=new HashMap<>();
+    static {
+        CacheMap.put(null,CacheManager.getCache(MemoryCache.class));
+    }
     public static ImageCache getCache(Class<? extends ImageCache> key) {
         if (!CacheMap.containsKey(key)) {
             synchronized (CacheManager.class) {
                 if (!CacheMap.containsKey(key)) {
                     try {
-                        //这里不需要同步，即使2和3发生指令重排序也不会影响
+                        //2和3会发生指令重排序吗？
                         ImageCache imageCache=key.newInstance();
-                        imageCache.init();
                         CacheMap.put(key, imageCache);
                     } catch (InstantiationException e) {
                         e.printStackTrace();

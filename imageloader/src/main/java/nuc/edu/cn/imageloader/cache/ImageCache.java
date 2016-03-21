@@ -9,6 +9,6 @@ import android.graphics.Bitmap;
 public interface ImageCache {
     void put(String url,Bitmap bmp);
     Bitmap get(String url);
-    void setContext(Context context);
-    void init();
+    void init(Context context);
+    boolean isInit();
 }

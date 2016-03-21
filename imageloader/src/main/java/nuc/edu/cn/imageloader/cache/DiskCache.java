@@ -9,6 +9,7 @@ import android.util.Log;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 import nuc.edu.cn.imageloader.disklrucache.DiskLruCache;
 import nuc.edu.cn.imageloader.utils.CloseUtils;
@@ -19,29 +20,33 @@ import nuc.edu.cn.imageloader.utils.CloseUtils;
 public class DiskCache implements ImageCache {
     private static final String TAG="DiskCache";
     private static String cacheDir=null;
-    private Context mContext;
     private DiskLruCache mDiskLruCache;
-    private static final int MB=1024*1024*5;
-    @Override
-    public void setContext(Context context){
-         mContext=context;
+    private static final int MB=1024*1024;
+    public boolean isInit=false;
+    private static final String IMAGE_DISK_CACHE = "bitmap";
 
-    }
     @Override
-    public void init() {
+    public void init(Context context) {
         if(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())){
-            cacheDir=mContext.getExternalCacheDir().getPath();
-            Log.d(TAG,"have SD");
+            cacheDir=context.getExternalCacheDir().getPath();
         }else {
-            cacheDir=mContext.getCacheDir().getPath();
-            Log.d(TAG," not have SD");
+            cacheDir=context.getCacheDir().getPath();
         }
-        Log.d(TAG,cacheDir);
-        File file=new File(cacheDir);
+        File file=new File(cacheDir+File.separator+IMAGE_DISK_CACHE);
         if(!file.exists()) {
-            Log.d(TAG, "file no exists");
             file.mkdirs();
         }
+        try {
+            mDiskLruCache=DiskLruCache.open(file,1,1,50*MB);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        isInit=true;
+    }
+
+    @Override
+    public boolean isInit() {
+        return isInit;
     }
 
 

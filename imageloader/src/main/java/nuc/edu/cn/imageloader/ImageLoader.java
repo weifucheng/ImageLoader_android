@@ -33,6 +33,7 @@ public class ImageLoader {
     }
     private void subitmLoadRequest(final String url, final ImageView imageView) {
         mExecutorService.submit(new Runnable() {
+
             @Override
             public void run() {
                 Bitmap bitmap=downloadImage(url);
@@ -71,13 +72,26 @@ public class ImageLoader {
     }
 
     /**
-     * 这个地方不使用单例模式，保持Builder的多样性
+     * 这个地方不使用单例模式，保持Builder的多样性,但如果一个地方想重复调用怎么办？
+     * new 多个Builder显然不合适，所以提供选择性单例
      */
     public static class Builder{
+        private static volatile Builder signBuilder=null;
         ImageLoaderConfig iConfig=new ImageLoaderConfig();
         public static Builder getBuilder(Context context){
             return new Builder(context);
         }
+        public static Builder getsignBuilder(Context context){
+            if(signBuilder==null){
+                synchronized (Builder.class){
+                    if(signBuilder==null){
+                        signBuilder=new Builder(context);
+                    }
+                }
+            }
+            return signBuilder;
+        }
+
         public Builder(Context context){
                 iConfig.context=context;
         }
@@ -103,6 +117,7 @@ public class ImageLoader {
             imageLoader.applyConfig(iConfig);
             return imageLoader;
         }
+
 
     }
 }
