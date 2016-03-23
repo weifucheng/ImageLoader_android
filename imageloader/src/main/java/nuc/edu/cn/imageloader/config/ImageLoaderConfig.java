@@ -16,7 +16,7 @@ public class ImageLoaderConfig {
     public DisplayConfig displayConfig;
     public int threadCount;
     public Context context;
-    public ImageLoaderConfig(){
+    private ImageLoaderConfig(){
         setImageCache(MemoryCache.class);
         displayConfig=new DisplayConfig();
         threadCount=Runtime.getRuntime().availableProcessors()+1;
@@ -36,5 +36,17 @@ public class ImageLoaderConfig {
     }
     public void setNotFoundPlaceholder(int ResId){
         displayConfig.failedResId=ResId;
+    }
+    public void clear(Context context){
+        setImageCache(MemoryCache.class);
+        displayConfig=new DisplayConfig();
+        threadCount=Runtime.getRuntime().availableProcessors()+1;
+        this.context=context;
+    }
+    public static ImageLoaderConfig getInstance(){
+        return ImageLoaderConfigHolder.sImageLoaderConfig;
+    }
+    private static class ImageLoaderConfigHolder{
+        private static final ImageLoaderConfig sImageLoaderConfig=new ImageLoaderConfig();
     }
 }

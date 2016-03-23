@@ -18,7 +18,7 @@ public class CacheManager {
             synchronized (CacheManager.class) {
                 if (!CacheMap.containsKey(key)) {
                     try {
-                        //2和3会发生指令重排序吗？
+                        //会发生指令重排序吗？
                         ImageCache imageCache=key.newInstance();
                         CacheMap.put(key, imageCache);
                     } catch (InstantiationException e) {

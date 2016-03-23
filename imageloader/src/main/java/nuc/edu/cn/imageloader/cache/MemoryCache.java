@@ -43,9 +43,6 @@ public class MemoryCache implements ImageCache {
     public Bitmap get(ImageRequest imageRequest){
         Log.d(TAG,imageRequest.mUrl+"取出");
         Bitmap bitmap=mImageCache.get(imageRequest.mUrl);
-        if(bitmap==null){
-            Log.d(TAG,imageRequest.mUrl+"取出为空");
-        }
         return bitmap;
     }
 
