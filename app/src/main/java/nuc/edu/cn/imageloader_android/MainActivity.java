@@ -31,21 +31,28 @@ public class MainActivity extends AppCompatActivity {
     }
     private void initData(){
         mData.add("http://img3.3lian.com/2006/005/15/192.jpg");
-        mData.add("http://img3.3lian.com/2006/005/15/185.jpg");
         mData.add("http://pic28.nipic.com/20130409/4546121_000900982170_2.jpg");
         mData.add("http://img3.3lian.com/2006/005/15/192.jpg");
         mData.add("http://img3.3lian.com/2006/005/15/185.jpg");
         mData.add("http://pic28.nipic.com/20130409/4546121_000900982170_2.jpg");
         mData.add("http://img3.3lian.com/2006/005/15/192.jpg");
         mData.add("http://img3.3lian.com/2006/005/15/185.jpg");
+        mData.add("http://pic1.nipic.com/2008-08-11/200881111020799_2.jpg");
+        mData.add("http://img3.3lian.com/2006/005/15/192.jpg");
+        mData.add("http://pic1.nipic.com/2008-08-11/200881111020799_2.jpg");
         mData.add("http://pic28.nipic.com/20130409/4546121_000900982170_2.jpg");
         mData.add("http://img3.3lian.com/2006/005/15/192.jpg");
+        mData.add("http://pic28.nipic.com/20130409/4546121_000900982170_2.jpg");
+        mData.add("http://pic1.nipic.com/2008-08-11/200881111020799_2.jpg");
         mData.add("http://img3.3lian.com/2006/005/15/185.jpg");
         mData.add("http://pic28.nipic.com/20130409/4546121_000900982170_2.jpg");
         mData.add("http://img3.3lian.com/2006/005/15/192.jpg");
-        mData.add("http://img3.3lian.com/2006/005/15/185.jpg");
         mData.add("http://pic28.nipic.com/20130409/4546121_000900982170_2.jpg");
+        mData.add("http://cdn.duitang.com/uploads/item/201201/28/20120128134054_CHEdy.jpg");
+        mData.add("http://cdn.duitang.com/uploads/item/201201/28/20120128134054_CHEdy.jpg");
         mData.add("http://img3.3lian.com/2006/005/15/192.jpg");
+        mData.add("http://cdn.duitang.com/uploads/item/201201/28/20120128134054_CHEdy.jpg");
+        mData.add("http://pic1.nipic.com/2008-08-11/200881111020799_2.jpg");
         mData.add("http://img3.3lian.com/2006/005/15/185.jpg");
         mData.add("http://pic28.nipic.com/20130409/4546121_000900982170_2.jpg");
 

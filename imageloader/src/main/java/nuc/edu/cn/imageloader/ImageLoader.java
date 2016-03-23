@@ -40,11 +40,14 @@ public class ImageLoader {
             public void run() {
                 Bitmap bitmap=downloadImage(url);
                 if (bitmap==null){
+                    Log.d("weifucheng",url+"下载为空");
                     return;
                 }
+                Log.d("weifucheng",url+"下载完成");
                 if(imageView.getTag().equals(url)){
                     imageView.setImageBitmap(bitmap);
                 }
+                Log.d("weifucheng",url+"加入缓存");
                 mConfig.imageCache.put(url, bitmap);
             }
         });

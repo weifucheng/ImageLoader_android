@@ -2,6 +2,7 @@ package nuc.edu.cn.imageloader.cache;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.util.LruCache;
 
 import nuc.edu.cn.imageloader.request.ImageRequest;
@@ -16,6 +17,7 @@ public class MemoryCache implements ImageCache {
     public boolean isInit=false;
     @Override
     public void init(Context context){
+        if(isInit()) return;
         final int maxMemory= (int) (Runtime.getRuntime().maxMemory()/1024);
         final int CacheSize=maxMemory/4;
         mImageCache=new LruCache<String,Bitmap>(CacheSize){
@@ -34,11 +36,17 @@ public class MemoryCache implements ImageCache {
 
     @Override
     public void put(String url,Bitmap bitmap){
+        Log.d(TAG,url+"进入");
         mImageCache.put(url, bitmap);
     }
     @Override
     public Bitmap get(ImageRequest imageRequest){
-        return mImageCache.get(imageRequest.mUrl);
+        Log.d(TAG,imageRequest.mUrl+"取出");
+        Bitmap bitmap=mImageCache.get(imageRequest.mUrl);
+        if(bitmap==null){
+            Log.d(TAG,imageRequest.mUrl+"取出为空");
+        }
+        return bitmap;
     }
 
 }

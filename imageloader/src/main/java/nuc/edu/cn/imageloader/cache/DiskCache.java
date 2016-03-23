@@ -3,6 +3,7 @@ package nuc.edu.cn.imageloader.cache;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -31,6 +32,7 @@ public class DiskCache implements ImageCache {
 
     @Override
     public void init(Context context) {
+        if(isInit) return;
         if(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())){
             cacheDir=context.getExternalCacheDir().getPath();
         }else {
@@ -41,7 +43,7 @@ public class DiskCache implements ImageCache {
             file.mkdirs();
         }
         try {
-            mDiskLruCache=DiskLruCache.open(file,1,1,50*MB);
+            mDiskLruCache=DiskLruCache.open(file,1,1,200*MB);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -55,16 +57,20 @@ public class DiskCache implements ImageCache {
 
 
     @Override
-    public void put(String url, Bitmap bmp) {
+    public  void put(String url, Bitmap bmp) {
         DiskLruCache.Editor editor=null;
         try {
+            DiskLruCache.Snapshot snapshot=mDiskLruCache.get(MD5Helper.StringtoMD5(url));
+            if(snapshot!=null) return;
             editor=mDiskLruCache.edit(MD5Helper.StringtoMD5(url));
             OutputStream outputStream=editor.newOutputStream(0);
             if(writeBitmapToDisk(bmp,outputStream)){
                 editor.commit();
+                Log.d(TAG,url+"have cache disk");
             }else {
                 editor.abort();
             }
+            mDiskLruCache.flush();
             CloseUtils.closeQuietly(outputStream);
         } catch (IOException e) {
             e.printStackTrace();
@@ -96,6 +102,7 @@ public class DiskCache implements ImageCache {
                         imageRequest.mImageView.getWidth(),imageRequest.mImageView.getHeight());
                 if(bitmap!=null){
                     CacheManager.getCache(MemoryCache.class).put(imageRequest.mUrl,bitmap);
+                    Log.d(TAG,"have cache DISK");
                 }
             }
         } catch (IOException e) {
