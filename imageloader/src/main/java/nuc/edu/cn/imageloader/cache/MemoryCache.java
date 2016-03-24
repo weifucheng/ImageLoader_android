@@ -15,6 +15,7 @@ public class MemoryCache implements ImageCache {
     private static final String TAG="MemoryCache";
     LruCache<String,Bitmap> mImageCache;
     public boolean isInit=false;
+    private MemoryCache(){}
     @Override
     public void init(Context context){
         if(isInit()) return;

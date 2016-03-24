@@ -29,7 +29,7 @@ public class DiskCache implements ImageCache {
     public boolean isInit=false;
     private ImageResizer mImageResiz=new ImageResizer();
     private static final String IMAGE_DISK_CACHE = "bitmap";
-
+    private DiskCache(){}
     @Override
     public void init(Context context) {
         if(isInit) return;

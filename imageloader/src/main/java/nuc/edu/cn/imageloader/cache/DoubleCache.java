@@ -12,6 +12,7 @@ public class DoubleCache implements ImageCache {
     MemoryCache mMemoryCache=null;
     DiskCache mDiskCache=null;
     public boolean isInit=false;
+    private DoubleCache(){}
     @Override
     public void init(Context context) {
         mMemoryCache= (MemoryCache) CacheManager.getCache(MemoryCache.class);

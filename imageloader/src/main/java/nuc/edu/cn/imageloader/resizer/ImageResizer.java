@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import java.io.FileDescriptor;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Created by weifucheng on 2016/3/21.
@@ -13,7 +15,16 @@ import java.io.FileDescriptor;
 public class ImageResizer {
     private static final String TAG="ImageResizer";
     public ImageResizer(){}
-    public Bitmap deodeSampledBitmapFromResource(Resources res,int resId,int reqWidth,int reqHeight){
+
+    /**
+     * 从资源中获得图片并压缩
+     * @param res       资源类
+     * @param resId     资源ID
+     * @param reqWidth  需要图片的宽度
+     * @param reqHeight 需要图片的高度
+     * @return          压缩后的图片
+     */
+    public static Bitmap deodeSampledBitmapFromResource(Resources res,int resId,int reqWidth,int reqHeight){
         final BitmapFactory.Options options=new BitmapFactory.Options();
         options.inJustDecodeBounds=true;
         BitmapFactory.decodeResource(res,resId,options);
@@ -21,15 +32,26 @@ public class ImageResizer {
         options.inJustDecodeBounds=false;
         return BitmapFactory.decodeResource(res,resId,options);
     }
-    public Bitmap deodeSampledBitmapFromFileDescriptor(FileDescriptor fd,int reqWidth,int reqHeight){
+    public static Bitmap deodeSampledBitmapFromFileDescriptor(FileDescriptor fd,int reqWidth,int reqHeight){
         final BitmapFactory.Options options=new BitmapFactory.Options();
         options.inJustDecodeBounds=true;
-        BitmapFactory.decodeFileDescriptor(fd,null,options);
+        BitmapFactory.decodeFileDescriptor(fd, null, options);
         options.inSampleSize=caculateInSampleSize(options,reqWidth,reqHeight);
         options.inJustDecodeBounds=false;
-        return BitmapFactory.decodeFileDescriptor(fd,null,options);
+        return BitmapFactory.decodeFileDescriptor(fd, null, options);
     }
-    public int caculateInSampleSize(BitmapFactory.Options options,int reqWidth,int reqHeight){
+    public static Bitmap deodeSampledBitmapFromStream(InputStream is,int reqWidth,int reqHeight) throws IOException {
+        final BitmapFactory.Options options=new BitmapFactory.Options();
+        options.inJustDecodeBounds=true;
+
+            is.mark(is.available());
+            BitmapFactory.decodeStream(is, null, options);
+            options.inSampleSize=caculateInSampleSize(options,reqWidth,reqHeight);
+            options.inJustDecodeBounds=false;
+            is.reset();
+        return BitmapFactory.decodeStream(is,null,options);
+    }
+    public static int caculateInSampleSize(BitmapFactory.Options options,int reqWidth,int reqHeight){
         if(reqWidth==0||reqHeight==0){
             return  1;
         }
