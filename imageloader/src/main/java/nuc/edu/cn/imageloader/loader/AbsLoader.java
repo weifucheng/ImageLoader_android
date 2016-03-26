@@ -3,6 +3,8 @@ package nuc.edu.cn.imageloader.loader;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
+import java.util.Observable;
+
 import nuc.edu.cn.imageloader.cache.ImageCache;
 import nuc.edu.cn.imageloader.config.DisplayConfig;
 import nuc.edu.cn.imageloader.config.ImageLoaderConfig;
@@ -13,9 +15,8 @@ import nuc.edu.cn.imageloader.request.ImageRequest;
  * 卡死，不知道如何获取cache配置
  * 解决：配置使用单例，轻松解决问题
  */
-public abstract class AbsLoader implements Loader {
+public abstract class AbsLoader extends Observable implements Loader{
     ImageCache mImageCache;
-    @Override
     public final void loadImage(ImageRequest request) {
             mImageCache= ImageLoaderConfig.getInstance().imageCache;
             Bitmap resultbitmap=mImageCache.get(request);

@@ -16,6 +16,14 @@ import nuc.edu.cn.imageloader.resizer.ImageResizer;
  * Created by weifucheng on 2016/3/23.
  */
 public class NetLoader extends AbsLoader {
+    private NetLoader(){
+        notifyObservers(this.getClass().getCanonicalName());
+    }
+    private static NetLoader sInstance=new NetLoader();
+    public static NetLoader getInstance(){
+        return sInstance;
+    }
+
     @Override
     protected Bitmap onLoadImage(ImageRequest request) {
         InputStream is=null;
@@ -32,4 +40,5 @@ public class NetLoader extends AbsLoader {
         }
         return bitmap;
     }
+
 }
