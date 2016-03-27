@@ -43,7 +43,7 @@ public class ImageLoader {
      */
     private void applyConfig(ImageLoaderConfig imageLoaderConfig){
         this.mConfig=imageLoaderConfig;
-        if(mIsstart) start();
+        if(!mIsstart) start();
     }
 
     /**
