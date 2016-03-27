@@ -4,8 +4,10 @@ import java.util.concurrent.BlockingQueue;
 
 import nuc.edu.cn.imageloader.loader.Loader;
 import nuc.edu.cn.imageloader.loader.LoaderManager;
+import nuc.edu.cn.imageloader.utils.LogUtils;
 
 /**
+ * 请求的处理线程
  * Created by weifucheng on 2016/3/23.
  */
 public class RequestDispatcher extends Thread {
@@ -15,7 +17,9 @@ public class RequestDispatcher extends Thread {
         this.mBlckingQueue=blockingQueue;
     }
 
-
+    /**
+     * 死循环，不断处理请求，直到中断
+     */
     @Override
     public void run() {
             while (!this.isInterrupted()){
@@ -29,6 +33,7 @@ public class RequestDispatcher extends Thread {
             }
     }
     protected String protocol(String uri){
-        return uri.substring(0,uri.indexOf("://"));
+        LogUtils.d(uri.substring(0,uri.indexOf("://")).toUpperCase());
+        return uri.substring(0,uri.indexOf("://")).toUpperCase();
     }
 }

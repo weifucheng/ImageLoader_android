@@ -1,99 +1,93 @@
 package nuc.edu.cn.imageloader;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
 import android.widget.ImageView;
-
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import nuc.edu.cn.imageloader.cache.ImageCache;
 import nuc.edu.cn.imageloader.config.ImageLoaderConfig;
 import nuc.edu.cn.imageloader.request.ImageRequest;
+import nuc.edu.cn.imageloader.request.RequestQueue;
 
 /**
  * Created by weifucheng on 2016/3/19.
  */
 public class ImageLoader {
     private ImageLoader(){}
+
+    /**
+     * 图片加载配置
+     */
     private ImageLoaderConfig mConfig;
-    ExecutorService mExecutorService= Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    /**
+     * 图片请求分发
+     */
+    private RequestQueue mImageQueue;
+    /**
+     * 判断是否已经开启处理图片请求的线程池
+     */
+    private Boolean mIsstart=false;
+
+    /**
+     * 显示图片
+     * @param url
+     * @param imageView
+     */
     public void displayImage(final String url,final ImageView imageView){
         ImageRequest imageRequest=new ImageRequest(imageView,url);
-        Bitmap bitmap=mConfig.imageCache.get(imageRequest);
-        if(bitmap!=null){
-            imageView.setImageBitmap(bitmap);
-            return;
-        }
-        imageView.setTag(url);
-        imageView.setImageBitmap(BitmapFactory.decodeResource(mConfig.context.getResources(),mConfig.displayConfig.loadingResId));
-        subitmLoadRequest(url, imageView);
-    }
-    private void subitmLoadRequest(final String url, final ImageView imageView) {
-        mExecutorService.submit(new Runnable() {
-
-            @Override
-            public void run() {
-                Bitmap bitmap=downloadImage(url);
-                if (bitmap==null){
-                    Log.d("weifucheng",url+"下载为空");
-                    return;
-                }
-                Log.d("weifucheng",url+"下载完成");
-                if(imageView.getTag().equals(url)){
-                    imageView.setImageBitmap(bitmap);
-                }
-                Log.d("weifucheng",url+"加入缓存");
-                mConfig.imageCache.put(url, bitmap);
-            }
-        });
+        mImageQueue.addRequest(imageRequest);
     }
 
-    public Bitmap downloadImage(String imageUrl){
-        Log.d("download", imageUrl + "come from download");
-        Bitmap bitmap=null;
-        try {
-            URL url=new URL(imageUrl);
-            final HttpURLConnection conn= (HttpURLConnection) url.openConnection();
-            bitmap= BitmapFactory.decodeStream(conn.getInputStream());
-            conn.disconnect();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return bitmap;
-    }
-    public void applyConfig(ImageLoaderConfig imageLoaderConfig){
+    /**
+     * 应用图片加载的配置
+     * @param imageLoaderConfig
+     */
+    private void applyConfig(ImageLoaderConfig imageLoaderConfig){
         this.mConfig=imageLoaderConfig;
-    }
-    protected static ImageLoader getInstance(){
-        return ImageLoaderHolder.sImageLoader;
-    }
-    private static class ImageLoaderHolder{
-        private static final ImageLoader sImageLoader=new ImageLoader();
+        if(mIsstart) start();
     }
 
-
-    public static class Builder{
-        private static volatile Builder signBuilder=null;
-        ImageLoaderConfig iConfig=ImageLoaderConfig.getInstance();
-        public static Builder getInstance(Context context){
-            if(signBuilder==null){
-                synchronized (Builder.class){
-                    if(signBuilder==null){
-                        signBuilder=new Builder();
-                    }
-                }
-            }
-            signBuilder.iConfig.clear(context);
-            return signBuilder;
+    /**
+     * 开启图片加载线程池
+     */
+    public void start(){
+        if(mImageQueue==null){
+            mImageQueue=new RequestQueue(mConfig.threadCount);
         }
+        mImageQueue.start();
+        mIsstart=true;
+    }
 
+    /**
+     * 关闭图片加载线程池
+     */
+    public void stop(){
+        if(mImageQueue!=null) {
+            mImageQueue.stop();
+            mIsstart=false;
+        }
+    }
+
+    /**
+     * ImageLoader的建造者
+     */
+    public static class Builder{
+        private ImageLoaderConfig iConfig=ImageLoaderConfig.getInstance();
+        private ImageLoader mLoader;
+        private static Builder sBuilder;
+
+        /**
+         * 获取Builder单例对象，这里的单例不需要同步，因为只能从主线程调用
+         * @param context
+         * @return
+         */
+        public static Builder getInstance(Context context){
+            if(sBuilder==null)
+                sBuilder=new Builder();
+            sBuilder.iConfig.context=context;
+            return sBuilder;
+        }
         private Builder(){
-
+            mLoader=new ImageLoader();
         }
         public ImageLoader.Builder setImageCache(Class<? extends ImageCache> imageCache){
                 iConfig.setImageCache(imageCache);
@@ -112,8 +106,13 @@ public class ImageLoader {
             iConfig.setNotFoundPlaceholder(ResId);
             return this;
         }
+
+        /**
+         * 返回一个ImageLoader对象
+         * @return
+         */
         public ImageLoader create(){
-            ImageLoader imageLoader=ImageLoader.getInstance();
+            ImageLoader imageLoader=mLoader;
             imageLoader.applyConfig(iConfig);
             return imageLoader;
         }

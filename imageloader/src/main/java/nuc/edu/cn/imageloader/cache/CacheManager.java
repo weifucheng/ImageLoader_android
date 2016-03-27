@@ -1,7 +1,11 @@
 package nuc.edu.cn.imageloader.cache;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+
+import nuc.edu.cn.imageloader.utils.LogUtils;
 
 /**
  * Created by weifucheng on 2016/3/20.
@@ -18,12 +22,18 @@ public class CacheManager {
             synchronized (CacheManager.class) {
                 if (!CacheMap.containsKey(key)) {
                     try {
-                        //会发生指令重排序吗？
-                        ImageCache imageCache=key.newInstance();
+                        LogUtils.d(key.getName());
+                        Constructor c=key.getDeclaredConstructor();
+                        c.setAccessible(true);
+                        ImageCache imageCache= (ImageCache) c.newInstance();
                         CacheMap.put(key, imageCache);
                     } catch (InstantiationException e) {
                         e.printStackTrace();
                     } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (NoSuchMethodException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
                         e.printStackTrace();
                     }
                 }

@@ -3,19 +3,17 @@ package nuc.edu.cn.imageloader.loader;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
-import java.util.Observable;
-
 import nuc.edu.cn.imageloader.cache.ImageCache;
 import nuc.edu.cn.imageloader.config.DisplayConfig;
 import nuc.edu.cn.imageloader.config.ImageLoaderConfig;
 import nuc.edu.cn.imageloader.request.ImageRequest;
+import nuc.edu.cn.imageloader.utils.LogUtils;
 
 /**
  * Created by weifucheng on 2016/3/23.
- * 卡死，不知道如何获取cache配置
- * 解决：配置使用单例，轻松解决问题
+ * Loader模板
  */
-public abstract class AbsLoader extends Observable implements Loader{
+public abstract class AbsLoader implements Loader{
     ImageCache mImageCache;
     public final void loadImage(ImageRequest request) {
             mImageCache= ImageLoaderConfig.getInstance().imageCache;
@@ -23,12 +21,12 @@ public abstract class AbsLoader extends Observable implements Loader{
             if(resultbitmap==null){
                 showLoading(request);
                 resultbitmap=onLoadImage(request);
+                LogUtils.d("下载完成==================");
                 cacheImage(request,resultbitmap);
             }
             updateUI(request, resultbitmap);
 
     }
-
     protected void updateUI(final ImageRequest request, final Bitmap resultbitmap) {
            final ImageView imageView=request.mImageView;
             if(imageView==null)return;

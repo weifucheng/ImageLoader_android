@@ -7,6 +7,7 @@ import nuc.edu.cn.imageloader.request.ImageRequest;
 
 /**
  * Created by weifucheng on 2016/3/20.
+ * 双缓存类
  */
 public class DoubleCache implements ImageCache {
     MemoryCache mMemoryCache=null;

@@ -4,8 +4,7 @@ import java.util.HashMap;
 
 /**
  * Created by weifucheng on 2016/3/23.
- * 现在如果自定义一个Loader需要在其构造方法中调用
- * LoaderManager.getInstance().registerLoader(协议名,this)
+ * Loader的管理类
  * 如何能实现自动注册？
  */
 public class LoaderManager {
@@ -19,11 +18,19 @@ public class LoaderManager {
         private static class LoaderManagerHolder{
             private static LoaderManager sInstance=new LoaderManager();
         }
+
+    /**
+     * 自定义的Loader，需要在这里进行注册
+     * @param protocol 协议，注意全部大写 eg:HTTP
+     * @param loader    自定义的Loader
+     */
         public void registerLoader(String protocol,Loader loader){
             mLoaderMap.put(protocol,loader);
         }
         public Loader getLoader(String protocol){
+            if (mLoaderMap.containsKey(protocol))
             return mLoaderMap.get(protocol);
+            return null;
         }
 
 }

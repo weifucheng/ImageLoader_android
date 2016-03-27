@@ -31,9 +31,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         ViewHolder myholder= (ViewHolder) holder;
-        ImageLoader.Builder builder=new ImageLoader.Builder(mContext);
-        builder.setImageCache(DoubleCache.class).setLoadingPlaceholder(R.drawable.loading).create()
-                .displayImage(mData.get(position),myholder.imageView);
+        ImageLoader.Builder.getInstance(mContext).
+                setLoadingPlaceholder(R.drawable.loading).
+                setImageCache(DoubleCache.class).create().
+                displayImage(mData.get(position), myholder.imageView);
     }
 
 

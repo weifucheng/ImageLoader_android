@@ -9,7 +9,7 @@ import nuc.edu.cn.imageloader.request.ImageRequest;
 
 /**
  * Created by weifucheng on 2016/3/19.
- * 这么多的AOP,是否需要使用代理呢？
+ * 内存缓存类
  */
 public class MemoryCache implements ImageCache {
     private static final String TAG="MemoryCache";

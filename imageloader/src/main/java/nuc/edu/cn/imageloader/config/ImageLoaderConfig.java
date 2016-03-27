@@ -8,10 +8,9 @@ import nuc.edu.cn.imageloader.cache.MemoryCache;
 
 /**
  * Created by weifucheng on 2016/3/20.
- * 难点：context应该什么时候传，在什么地方传，但init的时候就需要context
+ * 图片加载配置类
  */
 public class ImageLoaderConfig {
-    private static final String TAG="ImageLoaderConfig";
     public ImageCache imageCache;
     public DisplayConfig displayConfig;
     public int threadCount;
@@ -26,7 +25,9 @@ public class ImageLoaderConfig {
         if(!IC.isInit()) IC.init(context);
         this.imageCache=IC;
     }
-
+    private static class ImageLoaderConfigHolder{
+        private static final ImageLoaderConfig sImageLoaderConfig=new ImageLoaderConfig();
+    }
     public void setThreadCount(int threadCount) {
         this.threadCount = Math.max(threadCount,1);
     }
@@ -46,7 +47,5 @@ public class ImageLoaderConfig {
     public static ImageLoaderConfig getInstance(){
         return ImageLoaderConfigHolder.sImageLoaderConfig;
     }
-    private static class ImageLoaderConfigHolder{
-        private static final ImageLoaderConfig sImageLoaderConfig=new ImageLoaderConfig();
-    }
+
 }

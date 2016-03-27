@@ -8,12 +8,13 @@ import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 
+import nuc.edu.cn.imageloader.utils.LogUtils;
+
 /**
  * Created by weifucheng on 2016/3/21.
  * 图片压缩的类
  */
 public class ImageResizer {
-    private static final String TAG="ImageResizer";
     public ImageResizer(){}
 
     /**
@@ -24,15 +25,23 @@ public class ImageResizer {
      * @param reqHeight 需要图片的高度
      * @return          压缩后的图片
      */
-    public static Bitmap deodeSampledBitmapFromResource(Resources res,int resId,int reqWidth,int reqHeight){
+    public  Bitmap deodeSampledBitmapFromResource(Resources res,int resId,int reqWidth,int reqHeight){
         final BitmapFactory.Options options=new BitmapFactory.Options();
         options.inJustDecodeBounds=true;
-        BitmapFactory.decodeResource(res,resId,options);
+        BitmapFactory.decodeResource(res, resId, options);
         options.inSampleSize=caculateInSampleSize(options,reqWidth,reqHeight);
         options.inJustDecodeBounds=false;
-        return BitmapFactory.decodeResource(res,resId,options);
+        return BitmapFactory.decodeResource(res, resId, options);
     }
-    public static Bitmap deodeSampledBitmapFromFileDescriptor(FileDescriptor fd,int reqWidth,int reqHeight){
+
+    /**
+     * 从文件修饰符中获取压缩文件，避免对文件流的二次加载
+     * @param fd
+     * @param reqWidth
+     * @param reqHeight
+     * @return
+     */
+    public  Bitmap deodeSampledBitmapFromFileDescriptor(FileDescriptor fd,int reqWidth,int reqHeight){
         final BitmapFactory.Options options=new BitmapFactory.Options();
         options.inJustDecodeBounds=true;
         BitmapFactory.decodeFileDescriptor(fd, null, options);
@@ -40,18 +49,38 @@ public class ImageResizer {
         options.inJustDecodeBounds=false;
         return BitmapFactory.decodeFileDescriptor(fd, null, options);
     }
-    public static Bitmap deodeSampledBitmapFromStream(InputStream is,int reqWidth,int reqHeight) throws IOException {
-        final BitmapFactory.Options options=new BitmapFactory.Options();
-        options.inJustDecodeBounds=true;
 
-            is.mark(is.available());
+    /**
+     * 从输入流中获取压缩图片，网络请求使用
+     * 问题：mark的大小不知道设置为多少合适？
+     * @param is
+     * @param reqWidth
+     * @param reqHeight
+     * @return
+     * @throws IOException
+     */
+    public  Bitmap deodeSampledBitmapFromStream(InputStream is,int reqWidth,int reqHeight) throws IOException {
+            is.mark(1024*1024*5);
+            final BitmapFactory.Options options=new BitmapFactory.Options();
+            options.inJustDecodeBounds=true;
             BitmapFactory.decodeStream(is, null, options);
+            if(options.inJustDecodeBounds){
+                is.reset();
+                LogUtils.d("复位===========");
+            }
             options.inSampleSize=caculateInSampleSize(options,reqWidth,reqHeight);
             options.inJustDecodeBounds=false;
-            is.reset();
-        return BitmapFactory.decodeStream(is,null,options);
+            return BitmapFactory.decodeStream(is, null, options);
     }
-    public static int caculateInSampleSize(BitmapFactory.Options options,int reqWidth,int reqHeight){
+
+    /**
+     * 计算缩放率
+     * @param options
+     * @param reqWidth
+     * @param reqHeight
+     * @return
+     */
+    public  int caculateInSampleSize(BitmapFactory.Options options,int reqWidth,int reqHeight){
         if(reqWidth==0||reqHeight==0){
             return  1;
         }

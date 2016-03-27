@@ -11,13 +11,14 @@ import java.net.URL;
 
 import nuc.edu.cn.imageloader.request.ImageRequest;
 import nuc.edu.cn.imageloader.resizer.ImageResizer;
+import nuc.edu.cn.imageloader.utils.LogUtils;
 
 /**
+ * 网络Loader
  * Created by weifucheng on 2016/3/23.
  */
 public class NetLoader extends AbsLoader {
     private NetLoader(){
-        notifyObservers(this.getClass().getCanonicalName());
     }
     private static NetLoader sInstance=new NetLoader();
     public static NetLoader getInstance(){
@@ -26,13 +27,15 @@ public class NetLoader extends AbsLoader {
 
     @Override
     protected Bitmap onLoadImage(ImageRequest request) {
+        LogUtils.d("download================");
         InputStream is=null;
         Bitmap bitmap=null;
+        ImageResizer imageResizer=new ImageResizer();
         try {
             URL url=new URL(request.mUrl);
             HttpURLConnection conn= (HttpURLConnection) url.openConnection();
             is=new BufferedInputStream(conn.getInputStream());
-            bitmap=ImageResizer.deodeSampledBitmapFromStream(is,request.mImageView.getWidth(),request.mImageView.getHeight());
+            bitmap=imageResizer.deodeSampledBitmapFromStream(is,request.mImageView.getWidth(),request.mImageView.getHeight());
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {

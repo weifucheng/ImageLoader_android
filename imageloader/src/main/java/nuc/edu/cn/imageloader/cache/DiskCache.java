@@ -19,6 +19,7 @@ import nuc.edu.cn.imageloader.utils.CloseUtils;
 import nuc.edu.cn.imageloader.utils.MD5Helper;
 
 /**
+ * 磁盘缓存类
  * Created by weifucheng on 2016/3/20.
  */
 public class DiskCache implements ImageCache {
