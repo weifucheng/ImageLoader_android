@@ -13,7 +13,8 @@ import nuc.edu.cn.imageloader.utils.LogUtils;
  * 来存取Cache
  */
 public class CacheManager {
-    private static volatile Map<Class<? extends ImageCache>,ImageCache> CacheMap=new HashMap<>();
+    //不需要volatile，因为指令重排序不会在2条语句直接发生。
+    private static  Map<Class<? extends ImageCache>,ImageCache> CacheMap=new HashMap<>();
     static {
         CacheMap.put(null,CacheManager.getCache(MemoryCache.class));
     }

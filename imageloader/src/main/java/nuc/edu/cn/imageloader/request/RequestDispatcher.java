@@ -22,7 +22,8 @@ public class RequestDispatcher extends Thread {
      */
     @Override
     public void run() {
-            while (!this.isInterrupted()){
+            //这里应该使用interrupted，注意interrupted和isInterrupted的区别
+            while (!Thread.interrupted()){
                 try {
                     final ImageRequest request=mBlckingQueue.take();
                     Loader imageLoader= LoaderManager.getInstance().getLoader(protocol(request.mUrl));

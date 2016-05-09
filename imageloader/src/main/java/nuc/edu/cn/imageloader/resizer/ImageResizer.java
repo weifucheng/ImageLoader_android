@@ -53,6 +53,7 @@ public class ImageResizer {
     /**
      * 从输入流中获取压缩图片，网络请求使用
      * 问题：mark的大小不知道设置为多少合适？
+     * 这里不应该使用这种方法，应该先把流全部加载，然后再进行处理，注意修改
      * @param is
      * @param reqWidth
      * @param reqHeight
